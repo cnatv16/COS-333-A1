@@ -24,6 +24,7 @@ def main():
         print('Registrar application: show overviews of classes \n') 
         exit(0)
 
+# args parse somewhere 
 # try:with connect (DATABASE_URL, uri = True) as connection:
 
           
