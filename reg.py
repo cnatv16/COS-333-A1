@@ -26,17 +26,30 @@ def main():
                         action="store")
     args = parser.parse_args()
 
+
     try:
         with connect (DATABASE_URL, uri=True) as connection:
             with closing (connection.cursor()) as cursor:
 
-                stmt_str = "SELECT classid, dept, coursenum, araa, title FROM classes, crosslistings, courses WHERE "
+                stmt_str = "SELECT classid, dept, coursenum, area, title FROM classes, crosslistings, courses WHERE courses.courseid = classes.courseid "
+                stmt_str += "AND classes.courseid = crosslistings.courseid "
 
                 if args.d != None:
-                    stmt_str += "crosslistings.dept = ' " + str(args.d) + "'"
+                    stmt_str += "AND dept LIKE '%" + str(args.d[0]) + "%'"
+
+                if args.n != None:
+                    stmt_str += "AND coursenum LIKE '%" + str(args.n[0]) + "%'"
+
+                if args.a != None:
+                    stmt_str += "AND area LIKE '%" + str(args.a[0]) + "%'"
+
+                if args.t != None:
+                    stmt_str += "AND title LIKE '%" + str(args.t[0]) + "%'"
+
                 cursor.execute(stmt_str)
 
                 row = cursor.fetchone()
+
                 while row is not None:
                     print('classid: ', row[0])
                     print('dept: ', row[1])
@@ -45,13 +58,12 @@ def main():
                     print('title: ', row[4])
                     print()
                     row = cursor.fetchone()
+                    
 
     except Exception as ex:
         print(ex, file=stderr)
         exit(1)
-        
-
-
+            
 
 
 
