@@ -14,15 +14,15 @@ import argparse
 DATABASE_URL = 'file:reg.sqlite?mode=ro'
 
 def main():
-
+    
     parser = argparse.ArgumentParser(description="Registrar application: show overviews of classes",  allow_abbrev=False)
-    parser.add_argument("-d", metavar= "dept", dest = "d", nargs= 1, help="show only those classes whose department contains dept", 
+    parser.add_argument("-d", metavar= "dept", dest = "d", help="show only those classes whose department contains dept", 
                         action="store")
-    parser.add_argument("-n", metavar="num", dest = "n", nargs= 1, help="show only those classes whose course number contains num", 
+    parser.add_argument("-n", metavar="num", dest = "n", help="show only those classes whose course number contains num", 
                         action="store")
-    parser.add_argument("-a", metavar="area", dest = "a", nargs= 1, help="show only those classes whose distrib area contains area", 
+    parser.add_argument("-a", metavar="area", dest = "a", help="show only those classes whose distrib area contains area", 
                         action="store")
-    parser.add_argument("-t", metavar="title", dest = "t", nargs= 1, help="show only those classes whose course title contains title", 
+    parser.add_argument("-t", metavar="title", dest = "t", help="show only those classes whose course title contains title", 
                         action="store")
     args = parser.parse_args()
 
@@ -35,16 +35,16 @@ def main():
                 stmt_str += "AND classes.courseid = crosslistings.courseid "
 
                 if args.d != None:
-                    stmt_str += "AND dept LIKE '%" + str(args.d[0]) + "%'"
+                    stmt_str += "AND dept LIKE '%" + str(args.d) + "%'"
 
                 if args.n != None:
-                    stmt_str += "AND coursenum LIKE '%" + str(args.n[0]) + "%'"
+                    stmt_str += "AND coursenum LIKE '%" + str(args.n) + "%'"
 
                 if args.a != None:
-                    stmt_str += "AND area LIKE '%" + str(args.a[0]) + "%'"
+                    stmt_str += "AND area LIKE '%" + str(args.a) + "%'"
 
                 if args.t != None:
-                    stmt_str += "AND title LIKE '%" + str(args.t[0]) + "%'"
+                    stmt_str += "AND title LIKE '%" + str(args.t) + "%'"
 
                 cursor.execute(stmt_str)
 
