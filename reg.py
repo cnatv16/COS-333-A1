@@ -8,7 +8,7 @@
 from sys import argv, stderr, exit
 from contextlib import closing
 from sqlite3 import connect
-import argparse
+import argparse, textwrap
 #---------------------------------------------------------------------------------
 
 DATABASE_URL = 'file:reg.sqlite?mode=ro'
@@ -34,19 +34,34 @@ def main():
                 stmt_str = "SELECT classid, dept, coursenum, area, title FROM classes, crosslistings, courses WHERE courses.courseid = classes.courseid "
                 stmt_str += "AND classes.courseid = crosslistings.courseid "
 
+                prep = []
+
                 if args.d != None:
-                    stmt_str += "AND dept LIKE '%" + str(args.d) + "%'"
+                    dept = '%' + str(args.d) + '%'
+                    stmt_str += "AND dept LIKE ?"
+                    prep.append(dept)
 
                 if args.n != None:
-                    stmt_str += "AND coursenum LIKE '%" + str(args.n) + "%'"
+                    num = '%' + str(args.n) + '%'
+                    stmt_str += "AND coursenum LIKE ?"
+                    prep.append(num)
 
                 if args.a != None:
-                    stmt_str += "AND area LIKE '%" + str(args.a) + "%'"
+                    area = '%' + str(args.a) + '%'
+                    stmt_str += "AND area LIKE ?"
+                    prep.append(area)
 
                 if args.t != None:
-                    stmt_str += "AND title LIKE '%" + str(args.t) + "%'"
+                    if '%' not in str(args.t):
+                        title = '%' + str(args.t) + '%'
+                    else:
+                        tit = str(args.t).replace("%", "\%")
+                        title = "'%" + tit + "%'" + " ESCAPE '\\'"
 
-                cursor.execute(stmt_str)
+                    stmt_str += "AND title LIKE ?"
+                    prep.append(title)
+
+                cursor.execute(stmt_str, prep)
 
                 row = cursor.fetchone()
 
