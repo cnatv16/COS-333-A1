@@ -19,5 +19,10 @@ def main():
     os.system('python3 ' + argv[1]+ ' 9012')
     os.system('python3 ' + argv[1]+ ' 10188')
 
+    os.system('python3 ' + argv[1])
+    os.system('python3 ' + argv[1]+ ' 8321 9032')
+    os.system('python3 ' + argv[1]+ ' abc123')
+    os.system('python3 ' + argv[1]+ ' 9034')
+
 if __name__ == "__main__":
     main()

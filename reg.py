@@ -37,6 +37,7 @@ def main():
                 stmt_str += r"AND (coursenum LIKE ? ESCAPE '\') " 
                 stmt_str += r"AND (area LIKE ? ESCAPE '\') " 
                 stmt_str += r"AND (title LIKE ? ESCAPE '\')"
+                stmt_str += "ORDER BY dept, coursenum, classid ASC"
 
                 dept= "%%"
                 num = "%%"
@@ -45,11 +46,9 @@ def main():
 
                 if args.d != None:
                     if '%' in str(args.d):
-                        dep = args.d.replace("%", r"\%")
-                        dept = "%" + dep + "%"
+                        dept = "%" + args.d.replace("%", r"\%") + "%"
                     elif '_' in str(args.d):
-                        dep = args.d.replace("_", r"\_")
-                        dept = "%" + dep + "%"
+                        dept = "%" + args.d.replace("_", r"\_") + "%"
 
                     else:
                         dept = '%' + str(args.d) + '%'
@@ -60,13 +59,13 @@ def main():
 
                 if args.a != None:
                     if '%' in str(args.a):
-                        ar = args.a.replace("%", r"\%")
-                        area = "%" + ar + "%"
+                        area = "%" + args.a.replace("%", r"\%") + "%"
                     elif '_' in str(args.d):
-                        ar = args.a.replace("_", r"\_")
-                        area = "%" + ar + "%"
+                        area = "%" + args.a.replace("_", r"\_") + "%"
                     else:
                         area = '%' + str(args.a) + '%'
+
+
                     # escape character ifs
         #replace for underscore as well
         # do replace for other queries as well
@@ -74,28 +73,29 @@ def main():
 
                 if args.t != None:
                     if '%' in str(args.t):
-                        tit = args.t.replace("%", r"\%")
-                        title = "%" + tit + "%"
+                        title = "%" + args.t.replace("%", r"\%") + "%"
                     elif '_' in str(args.t):
-                        tit = args.t.replace("_", r"\_")
-                        title = "%" + tit + "%"
+                        title = "%" + args.t.replace("_", r"\_") + "%"
                     else:
                         title = '%' + str(args.t) + '%'
-                    print(stmt_str)
-                
-                print(title)
-
+                   
                 cursor.execute(stmt_str, [dept, num, area, title])
 
                 row = cursor.fetchone()
+                print("ClsId Dept CrsNum Area Title")
+                print("----- ---- ------ ---- -----")
 
                 while row is not None:
-                    print('classid: ', row[0])
-                    print('dept: ', row[1])
-                    print('coursenum: ', row[2])
-                    print('area: ', row[3])
-                    print('title: ', row[4])
-                    print()
+                    text = ""
+                    text += textwrap.fill(str(row[0]), initial_indent = ' ' * (5-len(str(row[0]))))
+                    text += textwrap.fill(str(row[1]), initial_indent = ' ' * (5-len(str(row[1]))))
+                    text += textwrap.fill(str(row[2]), initial_indent = ' ' * (7-len(str(row[2]))))
+                    text += textwrap.fill(str(row[3]), initial_indent = ' ' * (5-len(str(row[3]))))
+                    if row[3] != "":
+                        text += textwrap.fill(str(row[4]), initial_indent = ' ')
+                    else:
+                        text += textwrap.fill(str(row[4]), initial_indent = ' ' * 6)
+                    print(textwrap.fill(text, subsequent_indent= ' ' * 23, width = 72))
                     row = cursor.fetchone()
                     
 
@@ -103,9 +103,6 @@ def main():
         print(ex, file=stderr)
         exit(1)
             
-
-
-
 
 if __name__ == "__main__":
     main()

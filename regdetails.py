@@ -8,14 +8,14 @@
 from sys import argv, stderr, exit
 from contextlib import closing
 from sqlite3 import connect
-import argparse, re, textwrap
+import argparse, textwrap
 #---------------------------------------------------------------------------------
 DATABASE_URL = 'file:reg.sqlite?mode=ro'
 
 def main():
     parser = argparse.ArgumentParser(description="Registrar application: \
         show details about a class",  allow_abbrev=False)
-    parser.add_argument("classid", help="the id of the class whose details \
+    parser.add_argument("classid", type = int, help="the id of the class whose details \
         should be shown")
     args = parser.parse_args()
 
@@ -46,27 +46,31 @@ def main():
                     cursor.execute(class_stmt,[args.classid])
                     row = cursor.fetchone()
 
-                    print("Course Id: ", row[0])
+                    if row is None:
+                        raise RuntimeError
+
+                    print("Course Id:", row[0])
                     print()
-                    print("Days: ", row[1])
-                    print("Start time: ", row[2])
-                    print("End time: ", row[3])
-                    print("Building: ", row[4])
-                    print("Room: ", row[5])
+                    print("Days:", row[1])
+                    print("Start time:", row[2])
+                    print("End time:", row[3])
+                    print("Building:", row[4])
+                    print("Room:", row[5])
                     print()
 
                     cursor.execute(cross_stmt,[args.classid])
                     row = cursor.fetchone()
                     while row is not None:
-                        print("Dept and Number: ", row[0],  row[1])
+                        print("Dept and Number:", row[0],  row[1])
                         row = cursor.fetchone()
 
                     cursor.execute(course_stmt,[args.classid])
                     row = cursor.fetchone()
                     print()
-                    print("Area: ", row[0])
+                    print("Area:", row[0])
                     print()
-                    print("Title: ", row[1])
+                    title = "Title: " + row[1]
+                    print(textwrap.fill(title, width = 72))
                     print()
                     descrip = "Description: " + row[2]
                     print(textwrap.fill(descrip, width = 72))
@@ -78,9 +82,11 @@ def main():
                     cursor.execute(profs_stmt,[args.classid])
                     row = cursor.fetchone()
                     while row is not None:
-                        print("Professor: ", row[0])
+                        print("Professor:", row[0])
                         row = cursor.fetchone()
 
+    except RuntimeError as ex:
+        print(argv[0] + ":",  'no class with classid', args.classid, 'exsits', file=stderr)
     except Exception as ex:
         print(ex, file=stderr)
         exit(1)
