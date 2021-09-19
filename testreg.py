@@ -11,20 +11,22 @@ import os
 # from sqlite3 import connect
 # import argparse, textwrap
 #---------------------------------------------------------------------------------
-os.system('python reg.py -d COS')
-os.system('python reg.py -n 333')
-os.system('python reg.py -n b')
-os.system('python reg.py -a Qr')
-os.system('python reg.py -t intro')
-os.system('python reg.py -t science')
-os.system('python reg.py -t C_S')
-os.system('python reg.py -t c%s')
-os.system('python reg.py -d cos -n 3')
-os.system('python reg.py -d cos -a qr -n 2 -t intro')
-os.system('python reg.py -t "Independent Study"')
-os.system('python reg.py -t " Independent Study"')
-os.system('python reg.py -t "Independent Study "')
-os.system('python reg.py -t "Independent Study  "')
-os.system('python reg.py -t "  Independent Study"')
-os.system('python reg.py -t=-c')
+def main():
+    os.system('python '+ argv [1] + ' -d COS')
+    os.system('python '+ argv [1] + ' -n 333')
+    os.system('python '+ argv [1] + ' -n b')
+    os.system('python '+ argv [1] + ' -a Qr')
+    os.system('python '+ argv [1] + ' -t intro')
+    os.system('python '+ argv [1] + ' -t science')
+    os.system('python '+ argv [1] + ' -t C_S')
+    os.system('python '+ argv [1] + '  -d cos -n 3')
+    os.system('python '+ argv [1] + ' -d cos -a qr -n 2 -t intro')
+    os.system('python '+ argv [1] + ' -t "Independent Study"')
+    os.system('python '+ argv [1] + ' -t " Independent Study"')
+    os.system('python '+ argv [1] + ' -t "Independent Study "')
+    os.system('python '+ argv [1] + ' -t "Independent Study  "')
+    os.system('python '+ argv [1] + ' -t "  Independent Study"')
+    os.system('python '+ argv [1] + ' -t=-c')
 
+if __name__ == "__main__":
+    main()
