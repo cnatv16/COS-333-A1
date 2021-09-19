@@ -27,6 +27,15 @@ def main():
     os.system('python '+ argv [1] + ' -t "Independent Study  "')
     os.system('python '+ argv [1] + ' -t "  Independent Study"')
     os.system('python '+ argv [1] + ' -t=-c')
+    os.system('python '+ argv [1] + ' a qr')
+    os.system('python '+ argv [1] + ' -A qr')
+    os.system('python '+ argv [1] + ' "-a " qr')
+    os.system('python '+ argv [1] + ' -a qr st')
+    os.system('python '+ argv [1] + ' -a')
+    os.system('python '+ argv [1] + ' -a qr -d')
+    os.system('python '+ argv [1] + ' -a -d cos')
+    os.system('python '+ argv [1] + ' -x')
+
 
 if __name__ == "__main__":
     main()
