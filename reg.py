@@ -8,13 +8,13 @@
 from sys import argv, stderr, exit
 from contextlib import closing
 from sqlite3 import connect
-import argparse, re, textwrap
+import argparse, textwrap
 #---------------------------------------------------------------------------------
 
 DATABASE_URL = 'file:reg.sqlite?mode=ro'
 
 def main():
-    
+    # using argseparse to manage the potential arugemnts for this program, explaining each argument's function
     parser = argparse.ArgumentParser(description="Registrar application: show overviews of classes",  allow_abbrev=False)
     parser.add_argument("-d", metavar= "dept", dest = "d", help="show only those classes whose department contains dept", 
                         action="store")
@@ -28,9 +28,11 @@ def main():
 
 
     try:
+         # connecting to the database, if fails closes and throws exception
         with connect (DATABASE_URL, uri=True) as connection:
             with closing (connection.cursor()) as cursor:
-
+                
+                # populating the statement to pass into the cursor and search through the database
                 stmt_str = "SELECT classid, dept, coursenum, area, title FROM classes, crosslistings, courses WHERE (courses.courseid = classes.courseid) "
                 stmt_str += "AND (classes.courseid = crosslistings.courseid) " 
                 stmt_str += r"AND (dept LIKE ? ESCAPE '\') "
@@ -44,6 +46,8 @@ def main():
                 area = "%%"
                 title = "%%"
 
+                # initialize variables, dept, num, area, and title based on given arguments
+                # accounting for escape characters potentially passed in through arguments 
                 if args.d != None:
                     if '%' in str(args.d):
                         dept = "%" + args.d.replace("%", r"\%") + "%"
@@ -55,7 +59,6 @@ def main():
 
                 if args.n != None:
                     num = '%' + str(args.n) + '%'
- 
 
                 if args.a != None:
                     if '%' in str(args.a):
@@ -65,12 +68,6 @@ def main():
                     else:
                         area = '%' + str(args.a) + '%'
 
-
-                    # escape character ifs
-        #replace for underscore as well
-        # do replace for other queries as well
-        # hardcode sql statement, set each var initially to "%%", change in if statements
-
                 if args.t != None:
                     if '%' in str(args.t):
                         title = "%" + args.t.replace("%", r"\%") + "%"
@@ -79,13 +76,19 @@ def main():
                     else:
                         title = '%' + str(args.t) + '%'
                    
+                # cursor executes the prepared statement to search through the database
                 cursor.execute(stmt_str, [dept, num, area, title])
 
+                # first row from database
                 row = cursor.fetchone()
+
+                # printing to output using requested formatting
                 print("ClsId Dept CrsNum Area Title")
                 print("----- ---- ------ ---- -----")
 
+                # traverse through all the rows returned from the cursor execution
                 while row is not None:
+                    # using textwrap to populate text in requested format
                     text = ""
                     text += textwrap.fill(str(row[0]), initial_indent = ' ' * (5-len(str(row[0]))))
                     text += textwrap.fill(str(row[1]), initial_indent = ' ' * (5-len(str(row[1]))))
@@ -96,9 +99,10 @@ def main():
                     else:
                         text += textwrap.fill(str(row[4]), initial_indent = ' ' * 6)
                     print(textwrap.fill(text, subsequent_indent= ' ' * 23, width = 72))
+                    # fetch the next row we want from the database
                     row = cursor.fetchone()
-                    
 
+    # catch an exceptions raised in the program
     except Exception as ex:
         print(ex, file=stderr)
         exit(1)
