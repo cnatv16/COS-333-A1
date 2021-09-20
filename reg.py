@@ -41,6 +41,7 @@ def main():
                 stmt_str += r"AND (title LIKE ? ESCAPE '\')"
                 stmt_str += "ORDER BY dept, coursenum, classid ASC"
 
+               
                 dept= "%%"
                 num = "%%"
                 area = "%%"
