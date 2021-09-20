@@ -8,11 +8,12 @@
 from sys import argv, stderr, exit
 from contextlib import closing
 from sqlite3 import connect
-import argparse, textwrap
+import argparse, textwrap, sys
 #---------------------------------------------------------------------------------
 DATABASE_URL = 'file:reg.sqlite?mode=ro'
 
 def main():
+    # build arg parser object, add arguments, and parse input
     parser = argparse.ArgumentParser(description="Registrar application: \
         show details about a class",  allow_abbrev=False)
     parser.add_argument("classid", type = int, help="the id of the class whose details \
@@ -23,7 +24,7 @@ def main():
             with connect (DATABASE_URL, uri=True) as connection:
                 with closing (connection.cursor()) as cursor:
 
-
+                    # build sql statement strings for cursor 
                     if args.classid  != None:
                         class_stmt = "SELECT classes.courseid, days, starttime, \
                             endtime, bldg, roomnum FROM classes, courses \
@@ -43,12 +44,15 @@ def main():
                             (profs.profid = coursesprofs.profid) AND classid LIKE ? \
                             ORDER BY profname ASC" 
 
+                    # run sql request with given argument 
                     cursor.execute(class_stmt,[args.classid])
                     row = cursor.fetchone()
 
+                    # throw exception if no such class exists 
                     if row is None:
                         raise RuntimeError
 
+                    # print details 
                     print("Course Id:", row[0])
                     print()
                     print("Days:", row[1])
@@ -58,12 +62,14 @@ def main():
                     print("Room:", row[5])
                     print()
 
+                    # run sql request for cross listings and print
                     cursor.execute(cross_stmt,[args.classid])
                     row = cursor.fetchone()
                     while row is not None:
                         print("Dept and Number:", row[0],  row[1])
                         row = cursor.fetchone()
 
+                    # run sql request for courses and print
                     cursor.execute(course_stmt,[args.classid])
                     row = cursor.fetchone()
                     print()
@@ -79,14 +85,15 @@ def main():
                     print(textwrap.fill(prereq, width = 72))
                     print()
 
+                    # run sql statement for professors and print
                     cursor.execute(profs_stmt,[args.classid])
                     row = cursor.fetchone()
                     while row is not None:
                         print("Professor:", row[0])
                         row = cursor.fetchone()
-
+    # catch errors
     except RuntimeError as ex:
-        print(argv[0] + ":",  'no class with classid', args.classid, 'exsits', file=stderr)
+        print(sys.argv[0] + ":",  'no class with classid', args.classid, 'exists', file=stderr)
     except Exception as ex:
         print(ex, file=stderr)
         exit(1)
